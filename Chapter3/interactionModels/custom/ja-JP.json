@@ -1,0 +1,82 @@
+{
+  "interactionModel": {
+    "dialog": {
+      "intents": [
+        {
+          "slots": [
+            {
+              "name": "user_message",
+              "elicitationRequired": true,
+              "type": "AMAZON.SearchQuery",
+              "confirmationRequired": false,
+              "prompts": {
+                "elicitation": "Elicit.Slot.62475027475.1215313737756"
+              }
+            }
+          ],
+          "name": "ChatBotIntent",
+          "confirmationRequired": false,
+          "prompts": {}
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "languageModel": {
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "slots": [
+            {
+              "name": "user_message",
+              "type": "AMAZON.SearchQuery",
+              "samples": [
+                "{user_message}"
+              ]
+            }
+          ],
+          "name": "ChatBotIntent",
+          "samples": []
+        },
+        {
+          "slots": [],
+          "name": "DummyIntent",
+          "samples": [
+            "ダミー"
+          ]
+        }
+      ],
+      "types": [],
+      "invocationName": "チャットボット"
+    },
+    "prompts": [
+      {
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "なにか話しかけてください。"
+          }
+        ],
+        "id": "Elicit.Slot.62475027475.1215313737756"
+      }
+    ]
+  }
+}
