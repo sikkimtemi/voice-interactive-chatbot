@@ -1,26 +1,18 @@
-import openai
+from openai import OpenAI
 from text_to_speech import text_to_speech
 from speech_to_text import speech_to_text
+import os
 
-# OpenAIのAPIキーを設定
-openai.api_key = 'your-api-key'
+client = OpenAI()
 
 # テンプレートの準備
-template = """あなたは猫のキャラクターとして振る舞うチャットボットです。
-制約:
-- 簡潔な短い文章で話します
-- 語尾は「…にゃ」、「…にゃあ」などです
-- 質問に対する答えを知らない場合は「知らないにゃあ」と答えます
-- 名前はクロです
-- 好物はかつおぶしです"""
+template = "あなたは音声対話型チャットボットです。完結で短い文章で回答してください。"
 
 # メッセージの初期化
-messages = [
-    {
-        "role": "system",
-        "content": template
-    }
-]
+messages = [{"role": "system", "content": template}]
+
+# 区切り文字の定義
+punctuations = ["。", "？", "！"]
 
 # ユーザーからのメッセージを受け取り、それに対する応答を生成
 while True:
@@ -32,21 +24,33 @@ while True:
         continue
 
     print("あなたのメッセージ: \n{}".format(user_message))
-    messages.append({
-        "role": "user",
-        "content": user_message
-    })
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=messages
+    messages.append({"role": "user", "content": user_message})
+
+    # ストリーミングでチャットボットの回答を生成
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo", messages=messages, stream=True
     )
-    bot_message = response['choices'][0]['message']['content']
-    print("チャットボットの回答: \n{}".format(bot_message))
 
-    # テキストを音声に変換して再生
-    text_to_speech(bot_message)
+    # レスポンスは細かく分割されているので、結合してメッセージを組み立てる
+    message_buffer = ""
+    bot_message = ""
+    print("チャットボットの回答: ", end="", flush=True)
+    for chunk in response:
+        finish_reason = chunk.choices[0].finish_reason
+        if finish_reason == "stop":
+            break
+        message_buffer += chunk.choices[0].delta.content
+        bot_message += chunk.choices[0].delta.content
+        print(chunk.choices[0].delta.content, end="", flush=True)
+        # 最後が「。」や「？」、「！」で終わっていたら、途中でもいったん再生
+        if any(message_buffer.endswith(punctuation) for punctuation in punctuations):
+            text_to_speech(message_buffer)
+            message_buffer = ""
 
-    messages.append({
-        "role": "assistant",
-        "content": bot_message
-    })
+    # 未再生のメッセージがあれば再生
+    if message_buffer != "":
+        text_to_speech(message_buffer)
+
+    # 最後に改行するためのprint
+    print()
+    messages.append({"role": "assistant", "content": bot_message})

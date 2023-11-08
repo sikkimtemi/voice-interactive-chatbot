@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const SpeechRecognition = window.SpeechRecognition || webkitSpeechRecognition;
     const startButton = document.getElementById("startButton");
     const clearButton = document.getElementById("clearButton");
     const status = document.getElementById("status");
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("startButton clicked");
         const apiKey = document.getElementById("apiKey").value;
         if (!recognition) {
-            recognition = new webkitSpeechRecognition();
+            recognition = new SpeechRecognition();
             recognition.onstart = function () {
                 status.innerHTML = "音声認識中";
             };

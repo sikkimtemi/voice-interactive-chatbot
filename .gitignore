@@ -161,3 +161,9 @@ cython_debug/
 
 # Mac
 .DS_Store
+
+# Audio files
+*.mp3
+*.flac
+*.m4a
+*.wav

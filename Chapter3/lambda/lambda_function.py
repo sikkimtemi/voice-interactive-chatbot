@@ -1,6 +1,7 @@
 import logging
 import ask_sdk_core.utils as ask_utils
-import openai
+from openai import OpenAI
+import os
 import time
 
 from ask_sdk_core.skill_builder import SkillBuilder
@@ -62,8 +63,9 @@ class ChatBotIntentHandler(AbstractRequestHandler):
         # 開始時刻
         start_time = time.time()
 
-        # OpenAIのAPIキーを設定
-        openai.api_key = 'your-api-key'
+        # 環境変数にOpenAIのAPIキーを設定
+        os.environ["OPENAI_API_KEY"] = "your-api-key"
+        client = OpenAI()
 
         # プロンプトの準備
         template = """あなたは音声対話型チャットボットです。以下の制約にしたがって回答してください。
@@ -94,7 +96,7 @@ class ChatBotIntentHandler(AbstractRequestHandler):
 
         try:
             # Streamingを有効にしてOpenAIのAPIを呼び出す
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.creat(
                 model="gpt-3.5-turbo",
                 messages=messages,
                 stream=True
@@ -102,9 +104,9 @@ class ChatBotIntentHandler(AbstractRequestHandler):
             message = ""
             for chunk in response:
                 elapsed_time = time.time() - start_time
-                finish_reason = chunk['choices'][0]['finish_reason']
+                finish_reason = chunk.choices[0].finish_reason
                 if finish_reason != 'stop':
-                    message += chunk['choices'][0]['delta']['content']
+                    message += chunk.choices[0].delta.content
                 if elapsed_time > 7.9:
                     message += "。すみません、タイムアウトしました。"
                     break
