@@ -2,7 +2,6 @@ import sounddevice as sd
 from scipy.io.wavfile import write
 from openai import OpenAI
 import numpy as np
-import os
 import threading
 import time
 

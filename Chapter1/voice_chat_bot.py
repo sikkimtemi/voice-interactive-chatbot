@@ -1,7 +1,6 @@
 from openai import OpenAI
 from text_to_speech import text_to_speech
 from speech_to_text import speech_to_text
-import os
 
 client = OpenAI()
 

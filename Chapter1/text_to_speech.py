@@ -1,6 +1,5 @@
 from openai import OpenAI
 import io
-import os
 import sounddevice as sd
 import soundfile as sf
 
